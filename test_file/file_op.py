@@ -29,8 +29,9 @@
 #     print('=====')
 # file5.close()
 
+
 # 6.调试文本读取指针
-file6 = open('./name.txt', encoding='UTF-8')
+file6 = open('name.txt', encoding='UTF-8')
 # .tell() 读取当前指针位置，按字节读取。一般来说，三个字节是一个字符
 print('当前文件指针的位置 %s' % file6.tell())
 # .read(n) 读取 n 个字符，n 为空，默认为全部；为 n 时 打印 n 个字符。会移动指针位置。
