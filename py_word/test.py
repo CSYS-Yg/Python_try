@@ -19,6 +19,24 @@ import os, re
 #         print(p.runs[0].font.size.pt)
 
 
+def test(filePath, result_path):
+    for file in os.listdir(filePath):
+        # 跳过非docx文件
+        if ".docx" not in file:
+            continue
+        # 创建imgPath
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+        doc = docx.Document(filePath + file)  # 打开文件
+        for rel in doc.part._rels:
+            rel = doc.part._rels[rel]  # 获得资源
+            if "image" not in rel.target_ref:
+                continue
+            imgName = re.findall("/(.*)", rel.target_ref)[0]
+            with open(file + imgName, "wb") as f:
+                f.write(rel.target_part.blob)
+
+
 def get_pictures(word_path, result_path):
     """
     提取word文档内的图片
@@ -30,12 +48,14 @@ def get_pictures(word_path, result_path):
     dict_rel = doc.part._rels
     for rel in dict_rel:
         rel = dict_rel[rel]
+        print(rel.target_ref)
         if "image" in rel.target_ref:
-            if not os.path.exists(result_path):
-                os.makedirs(result_path)
+            # 判断目录是否存在，创建目录
+            if not os.path.exists(result_path):  # os.path.exists 检查路径是否存在
+                os.makedirs(result_path)  # os.makedirs 创建路径
             img_name = re.findall("/(.*)", rel.target_ref)[0]
+            print(img_name)
             word_name = os.path.splitext(word_path)[0]
-            # print(os.sep)
             if os.sep in word_name:
                 new_name = word_name.split('\\')[-1]
             else:
@@ -45,7 +65,7 @@ def get_pictures(word_path, result_path):
                 f.write(rel.target_part.blob)
 
 
-get_pictures("06丨 轻度痘痘 _ 外用药的挑选及使用.docx", './')
+test("./", './')
 
 # run 下枚举的属性
 # ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__','__format__', '__ge__', '__getattribute__', '__gt__', '__hash__',
