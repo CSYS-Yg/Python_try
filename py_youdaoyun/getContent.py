@@ -41,7 +41,7 @@ params = {
 def getText(dataList):
     content = ''
     for i in range(len(dataList)):
-        if (i == 0):
+        if (i == 22):
             content = requests.get(dataList[i]['url'],
                                    headers=headers,
                                    params=params,
