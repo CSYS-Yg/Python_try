@@ -1,4 +1,6 @@
 import requests
+# from bs4 import BeautifulSoup
+import json
 
 cookies = {
     'OUTFOX_SEARCH_USER_ID_NCOO': '1910243514.2997293',
@@ -16,12 +18,14 @@ headers = {
     'Pragma': 'no-cache',
     'Cache-Control': 'no-cache',
     'Accept': '*/*',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+    'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
     'X-Requested-With': 'XMLHttpRequest',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Dest': 'empty',
-    'Referer': 'https://note.youdao.com/ynoteshare1/index.html?id=62218d1d8f42aea18e84d345e0e6923d^&type=notebook',
+    'Referer':
+    'https://note.youdao.com/ynoteshare1/index.html?id=62218d1d8f42aea18e84d345e0e6923d^&type=notebook',
     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
 }
 
@@ -31,6 +35,22 @@ params = (
     ('editorVersion', 'new-json-editor'),
 )
 
-response = requests.get('https://note.youdao.com/yws/public/note/62218d1d8f42aea18e84d345e0e6923d/00C9E44A34884B0CA786F35C11EFEA02', headers=headers, params=params, cookies=cookies)
+response = requests.get(
+    'https://note.youdao.com/yws/public/notebook/62218d1d8f42aea18e84d345e0e6923d/subdir/9D3030DCC7734AC3BBA0A01DAECF50B0',
+    headers=headers,
+    params=params,
+    cookies=cookies)
+jsonResponse = json.dumps(response.json(),
+                          sort_keys=True,
+                          indent=4,
+                          separators=(',', ':'))
 
-print(response.text)
+test = json.loads(jsonResponse)
+
+test = json.dumps(test, sort_keys=True, indent=4, separators=(',', ':'))
+
+print(test)
+
+# soup = BeautifulSoup(response.text, 'html.parser')
+
+# print(soup.prettify())
