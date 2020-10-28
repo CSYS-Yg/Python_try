@@ -50,42 +50,30 @@ def contentImage(htmlContent, name):
     text = str(htmlContent)
     imageList = re.findall('<source/>(.*?)<', str(htmlContent))
     for i in range(len(imageList)):
+        typeName = ''
         if (imageList[i].find('base64,') == -1):
-            imageName = urlDownload(imageList[i], i, name)
-            imageName = '<para><coid></coid><text>' + imageName + '</text></para>'
-            text = text.replace(imageList[i], imageName)
+            data = requests.get(imageList[i])
+            content = data.content
+            typeName = imghdr.what(None, content)
         else:
-            baseDownload(imageList[i], i, name)
-            imageName = '<para><coid></coid><text>' + imageName + '</text></para>'
-            text = text.replace(imageList[i], imageName)
+            content = imageList[i].replace('data:image/gif;base64,', '')
+            content = base64.b64decode(content)
+            typeName = imghdr.what(None, content)
+        imgname = name + '_' + str(i) + '.' + typeName
+        with open(imgname, 'wb') as fileName:
+            fileName.write(content)
+            fileName.close()
+        imgname = '<para><coid></coid><text>isImg~' + imgname + '</text></para>'  # noqa
+        text = text.replace(imageList[i], imgname)
     text = BeautifulSoup(text, 'html.parser')
     contentRefining(text)
     # 美化数据，新增页面
-    # text = text.prettify()
-    # newFile(name, text)
-
-
-def urlDownload(url, index, name):
-    data = requests.get(url)
-    content = data.content
-    typeName = imghdr.what(None, content)
-    imgname = name + '_' + str(index) + '.' + typeName
-    open(imgname, 'wb').write(content)
-    return imgname
-
-
-#
-def baseDownload(coding, index, name):
-    bs64_str = coding.replace('data:image/gif;base64,', '')
-    bs64_str = base64.b64decode(bs64_str)
-    typeName = imghdr.what(None, bs64_str)
-    imgname = name + '_' + str(index) + '.' + typeName
-    open(imgname, 'wb').write(bs64_str)
-    return imgname
+    text = text.prettify()
+    newFile(name, text)
 
 
 # # 打开文件，重新写入，或直接新建文件
 def newFile(name, content):
-    contentHtml = open(name + '.html', 'w', encoding='utf-8')
-    contentHtml.write(content)
-    contentHtml.close()
+    with open(name + '.html', 'w', encoding='utf-8') as contentHtml:
+        contentHtml.write(content)
+        contentHtml.close()
