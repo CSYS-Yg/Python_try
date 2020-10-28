@@ -46,4 +46,5 @@ def getText(dataList):
                                    headers=headers,
                                    params=params,
                                    cookies=cookies)
+            content.encoding = "utf-8"
     return content
