@@ -32,7 +32,7 @@ def refining(data):
     content = content.json()
     # 美化拿到的数据
     htmlContent = BeautifulSoup(content['content'], 'html.parser')
-    # contentRefining(htmlContent)
+    # 图片下载替换处理
     contentImage(htmlContent, content['tl'])
 
 
@@ -50,29 +50,38 @@ def contentImage(htmlContent, name):
     text = str(htmlContent)
     imageList = re.findall('<source/>(.*?)<', str(htmlContent))
     for i in range(len(imageList)):
-        x = '<para><text>' + 'img' + str(i) + 'img' + '</text></para>'
-        text = text.replace(imageList[i], x)
         if (imageList[i].find('base64,') == -1):
-            urlDownload(imageList[i], i)
+            imageName = urlDownload(imageList[i], i, name)
+            imageName = '<para><coid></coid><text>' + imageName + '</text></para>'
+            text = text.replace(imageList[i], imageName)
         else:
-            baseDownload(imageList[i], i)
+            baseDownload(imageList[i], i, name)
+            imageName = '<para><coid></coid><text>' + imageName + '</text></para>'
+            text = text.replace(imageList[i], imageName)
     text = BeautifulSoup(text, 'html.parser')
-    text = text.prettify()
-    # 数据写入，新增页面
-    newFile(name, text)
+    contentRefining(text)
+    # 美化数据，新增页面
+    # text = text.prettify()
+    # newFile(name, text)
 
 
-def urlDownload(url, index):
+def urlDownload(url, index, name):
     data = requests.get(url)
     content = data.content
-    # typeName = imghdr.what(None, content)
+    typeName = imghdr.what(None, content)
+    imgname = name + '_' + str(index) + '.' + typeName
+    open(imgname, 'wb').write(content)
+    return imgname
 
 
 #
-def baseDownload(coding, index):
+def baseDownload(coding, index, name):
     bs64_str = coding.replace('data:image/gif;base64,', '')
     bs64_str = base64.b64decode(bs64_str)
-    # typeName = imghdr.what(None, bs64_str)
+    typeName = imghdr.what(None, bs64_str)
+    imgname = name + '_' + str(index) + '.' + typeName
+    open(imgname, 'wb').write(bs64_str)
+    return imgname
 
 
 # # 打开文件，重新写入，或直接新建文件
