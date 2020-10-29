@@ -9,6 +9,9 @@ import getContent
 
 id = '62218d1d8f42aea18e84d345e0e6923d'
 
+imgPath = 'E:\github_project\epub-book\kexuezhandouzhinan\OEBPS\img\/'
+HtmlPath = 'E:\github_project\epub-book\kexuezhandouzhinan\OEBPS\content\/'
+
 
 # 请求接口，获取列表数据
 def getData(url):
@@ -60,7 +63,9 @@ def contentImage(htmlContent, name):
             content = base64.b64decode(content)
             typeName = imghdr.what(None, content)
         imgname = name + '_' + str(i) + '.' + typeName
-        with open(imgname, 'wb') as fileName:
+        if not os.path.exists(os.path.split(imgPath)[0]):
+            os.makedirs(os.path.split(imgPath)[0])
+        with open(imgPath + imgname, 'wb') as fileName:
             fileName.write(content)
             fileName.close()
         imgname = '<para><coid></coid><text>isImg~' + imgname + '</text></para>'  # noqa
