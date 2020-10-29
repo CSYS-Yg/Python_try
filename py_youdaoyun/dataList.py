@@ -43,26 +43,41 @@ def refining(data):
 
 
 # 读取文本内容
-def contentRefining(htmlContent):
+def contentRefining(htmlContent, name):
     paraData = htmlContent.find_all('para')
+    contentsList = []
+    contentsList.append("<title>" + name.split('丨')[1] + "</title>")
     for i in paraData:
         lineContents = i.contents[1].string
         if lineContents:
             if (lineContents.find('isImg~') != -1):
-                print('img:' + lineContents)
+                img = lineContents.split("~")[1]
+                contentsList.append('<img src="../img/' + img + '" />')
             else:
                 bgcolor = i.contents[2].find_all('back-color')[0].find_all(
                     'value')[0].string
-                fontSize = i.contents[2].find_all('font-size')[0].find_all(
-                    'value')[0].string
+                # fontSize = i.contents[2].find_all('font-size')[0].find_all(
+                #     'value')[0].string
                 color = i.contents[2].find_all('color')[0].find_all(
                     'value')[0].string
                 bold = False
                 boldList = i.contents[2].find_all('bold')
                 if len(boldList):
                     bold = True
-                print(bgcolor, fontSize, color, bold, lineContents)
-
+                if bold and color == "#ff6622":
+                    contentsList.append('<p class="sub-title red-content">' +
+                                        lineContents + '</p>')
+                elif bold and color == "#545454":
+                    contentsList.append('<p class="main-content fw-b">' +
+                                        lineContents + '</p>')
+                elif bgcolor == "#f7dad5":
+                    contentsList.append(
+                        '<p class="main-content gray-content">' +
+                        lineContents + '</p>')
+                else:
+                    contentsList.append('<p class="main-content">' +
+                                        lineContents + '</p>')
+    print(contentsList)
     # for i in paraData:
     #     if x == 1:
     #         if
@@ -95,7 +110,7 @@ def contentImage(htmlContent, name):
         imgname = '<para><coid></coid><text>isImg~' + imgname + '</text></para>'  # noqa
         text = text.replace(imageList[i], imgname)
     text = BeautifulSoup(text, 'html.parser')
-    contentRefining(text)
+    contentRefining(text, name)
     # # 美化数据，新增页面
     # text = text.prettify()
     # newFile(name, text)
