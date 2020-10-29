@@ -43,7 +43,7 @@ def newMimetype():
     with open(newPath, 'wb') as fileName:
         fileName.write(container.encode())
         fileName.close()
-    newPath = path + "mimetype"
+    newPath = path + epubName + "/mimetype"
     if not os.path.exists(os.path.split(newPath)[0]):
         os.makedirs(os.path.split(newPath)[0])
     with open(newPath, 'wb') as fileName:
