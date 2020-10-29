@@ -26,10 +26,13 @@ def refining(data):
     for i in data:
         purl = i['p'].split('/', 2)[2]
         purl = 'https://note.youdao.com/yws/public/note/' + id + '/' + purl
+        number = i['tl'].split('丨')[0]
         refiningData.append({
             "title": i['tl'],
+            "number": int(number),
             "url": purl,
         })
+    refiningData.sort(key=lambda x: x["number"])
     # 批量请求接口获取数据
     content = getContent.getText(refiningData)
     content = content.json()
@@ -43,8 +46,29 @@ def refining(data):
 def contentRefining(htmlContent):
     paraData = htmlContent.find_all('para')
     for i in paraData:
-        if (i.contents[1].string):
-            print(i.contents[1].string)
+        lineContents = i.contents[1].string
+        if lineContents:
+            if (lineContents.find('isImg~') != -1):
+                print('img:' + lineContents)
+            else:
+                bgcolor = i.contents[2].find_all('back-color')[0].find_all(
+                    'value')[0].string
+                fontSize = i.contents[2].find_all('font-size')[0].find_all(
+                    'value')[0].string
+                color = i.contents[2].find_all('color')[0].find_all(
+                    'value')[0].string
+                bold = False
+                boldList = i.contents[2].find_all('bold')
+                if len(boldList):
+                    bold = True
+                print(bgcolor, fontSize, color, bold, lineContents)
+
+    # for i in paraData:
+    #     if x == 1:
+    #         if
+    #         print(i.contents[2].find_all('back-color')[0].find_all('value')
+    #               [0].string)
+    #         x = x + 1
 
 
 # 匹配图片
@@ -72,9 +96,9 @@ def contentImage(htmlContent, name):
         text = text.replace(imageList[i], imgname)
     text = BeautifulSoup(text, 'html.parser')
     contentRefining(text)
-    # 美化数据，新增页面
-    text = text.prettify()
-    newFile(name, text)
+    # # 美化数据，新增页面
+    # text = text.prettify()
+    # newFile(name, text)
 
 
 # # 打开文件，重新写入，或直接新建文件
