@@ -1,16 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import os
 import imghdr
 import base64
 
 import getContent
+import newEpubStructure
 
 id = '62218d1d8f42aea18e84d345e0e6923d'
-
-imgPath = 'E:\github_project\epub-book\kexuezhandouzhinan\OEBPS\img\/'
-HtmlPath = 'E:\github_project\epub-book\kexuezhandouzhinan\OEBPS\content\/'
 
 
 # 请求接口，获取列表数据
@@ -33,17 +30,20 @@ def refining(data):
             "url": purl,
         })
     refiningData.sort(key=lambda x: x["number"])
+    newEpubStructure.newNcx(refiningData)
+    newEpubStructure.newOpf(refiningData)
     # 批量请求接口获取数据
-    content = getContent.getText(refiningData)
-    content = content.json()
-    # 美化拿到的数据
-    htmlContent = BeautifulSoup(content['content'], 'html.parser')
-    # 图片下载替换处理
-    contentImage(htmlContent, content['tl'])
+    for i in refiningData:
+        content = getContent.getText(i['url'])
+        content = content.json()
+        # 美化拿到的数据
+        htmlContent = BeautifulSoup(content['content'], 'html.parser')
+        # 图片下载替换处理
+        contentImage(htmlContent, i["title"], i["number"])
 
 
 # 读取文本内容
-def contentRefining(htmlContent, name):
+def contentRefining(htmlContent, name, index):
     paraData = htmlContent.find_all('para')
     contentsList = []
     contentsList.append("<title>" + name.split('丨')[1] + "</title>")
@@ -54,8 +54,10 @@ def contentRefining(htmlContent, name):
                 img = lineContents.split("~")[1]
                 contentsList.append('<img src="../img/' + img + '" />')
             else:
-                bgcolor = i.contents[2].find_all('back-color')[0].find_all(
-                    'value')[0].string
+                bgcolor = ""
+                if (len(i.contents[2].find_all('back-color')) > 0):
+                    bgcolor = i.contents[2].find_all('back-color')[0].find_all(
+                        'value')[0].string
                 # fontSize = i.contents[2].find_all('font-size')[0].find_all(
                 #     'value')[0].string
                 color = i.contents[2].find_all('color')[0].find_all(
@@ -77,17 +79,11 @@ def contentRefining(htmlContent, name):
                 else:
                     contentsList.append('<p class="main-content">' +
                                         lineContents + '</p>')
-    print(contentsList)
-    # for i in paraData:
-    #     if x == 1:
-    #         if
-    #         print(i.contents[2].find_all('back-color')[0].find_all('value')
-    #               [0].string)
-    #         x = x + 1
+    newEpubStructure.newHtml(contentsList, index)
 
 
 # 匹配图片
-def contentImage(htmlContent, name):
+def contentImage(htmlContent, name, index):
     # 图片列表
     text = str(htmlContent)
     imageList = re.findall('<source/>(.*?)<', str(htmlContent))
@@ -102,22 +98,14 @@ def contentImage(htmlContent, name):
             content = base64.b64decode(content)
             typeName = imghdr.what(None, content)
         imgname = name + '_' + str(i) + '.' + typeName
-        if not os.path.exists(os.path.split(imgPath)[0]):
-            os.makedirs(os.path.split(imgPath)[0])
-        with open(imgPath + imgname, 'wb') as fileName:
-            fileName.write(content)
-            fileName.close()
+        newEpubStructure.newImg(content, imgname)
         imgname = '<para><coid></coid><text>isImg~' + imgname + '</text></para>'  # noqa
         text = text.replace(imageList[i], imgname)
     text = BeautifulSoup(text, 'html.parser')
-    contentRefining(text, name)
-    # # 美化数据，新增页面
-    # text = text.prettify()
-    # newFile(name, text)
+    contentRefining(text, name, index)
 
 
-# # 打开文件，重新写入，或直接新建文件
-def newFile(name, content):
-    with open(name + '.html', 'w', encoding='utf-8') as contentHtml:
-        contentHtml.write(content)
-        contentHtml.close()
+# 获取编号 Id
+def getNumbering(number):
+    content = "0000000" + str(number)
+    return content[-5:]

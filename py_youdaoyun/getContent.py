@@ -38,13 +38,10 @@ params = {
 }
 
 
-def getText(dataList):
-    content = ''
-    for i in range(len(dataList)):
-        if (i == 2):
-            content = requests.get(dataList[i]['url'],
-                                   headers=headers,
-                                   params=params,
-                                   cookies=cookies)
-            content.encoding = "utf-8"
+def getText(url):
+    content = requests.get(url,
+                           headers=headers,
+                           params=params,
+                           cookies=cookies)
+    content.encoding = "utf-8"
     return content

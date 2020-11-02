@@ -2,6 +2,9 @@
 
 import os
 
+import dataList
+import json
+
 path = "F:\EpubText\/"  # 指定存取目录
 
 epubName = "kexuezhandouzhinan"  # 设置书名，最好为英文
@@ -48,4 +51,129 @@ def newMimetype():
         os.makedirs(os.path.split(newPath)[0])
     with open(newPath, 'wb') as fileName:
         fileName.write(mimetype.encode())
+        fileName.close()
+
+
+# 生成目录
+def newNcx(list):
+    contentBfter = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <ncx
+    xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="bookid"/>
+        <meta name="dtb:depth" content="0"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>科学抗痘指南</text>
+    </docTitle>
+    <!-- 菜单导航地图 -->
+    <navMap>
+    """
+    contentAfter = """
+        </navMap>
+        </ncx>
+    """
+    newPath = path + epubName + fixedNmae[1] + "toc.ncx"
+    content = ""
+    for i in list:
+        strNumber = dataList.getNumbering(i['number'])
+        content += """<navPoint class="chapter" id="html_%s" playOrder="1">
+            <navLabel>
+            <text>%s</text>
+            </navLabel>
+            <content src="content/test_%s.html"/>
+        </navPoint>
+        """ % (strNumber, i['title'], strNumber)
+    content = contentBfter + content + contentAfter
+    with open(newPath, 'wb') as fileName:
+        fileName.write(content.encode())
+        fileName.close()
+
+
+# 生成目录导航
+def newOpf(list):
+    contentBfter = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <package
+    xmlns:opf="http://www.idpf.org/2007/opf" unique-identifier="bookid"
+    xmlns="http://www.idpf.org/2007/opf" version="2.0">
+    <metadata
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:opf="http://www.idpf.org/2007/opf"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <!-- 出版物唯一标识码  -->
+        <dc:contributor opf:file-as="CompanyName" opf:role="own">Epubor</dc:contributor>
+        <dc:contributor opf:file-as="PersonalName" opf:role="own">Ultimate</dc:contributor>
+        <dc:contributor opf:file-as="eCore" opf:role="bkp">eCore v0.9.4.611 [ http://www.epubor.com/ecore.html ]</dc:contributor>
+        <dc:contributor opf:file-as="SiteURL" opf:role="own">http://www.epubor.com</dc:contributor>
+        <dc:creator opf:file-as="丁香医生" opf:role="aut">丁香医生</dc:creator>
+        <dc:date opf:event="publication">2020-09-17</dc:date>
+        <dc:identifier opf:scheme="ASIN">B00OUQ6DKQ</dc:identifier>
+        <dc:language>zh</dc:language>
+        <dc:publisher>与光整理</dc:publisher>
+        <dc:title>科学抗痘指南</dc:title>
+    </metadata>
+    <manifest>
+    """
+    intermediate = """
+        <item href="css/yuguang.css" id="id_Css" media-type="text/css"/>
+        <item href="css/test.css" id="id_Css2" media-type="text/css"/>
+        <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+    </manifest>
+    <spine toc = "ncx">
+    """
+    contentAfter = """
+            </spine>
+    <guide></guide>
+    </package>
+    """
+    manifestContent = ""
+    spineContent = ""
+    for i in list:
+        strNumber = dataList.getNumbering(i['number'])
+        manifestContent += """<item href="content/test_%s.html" id="html_%s" media-type="application/xhtml+xml"/>
+        """ % (strNumber, strNumber)
+        spineContent += """ <itemref idref="html_%s"/>
+        """ % (strNumber)
+    newPath = path + epubName + fixedNmae[1] + "content.opf"
+    content = contentBfter + manifestContent + intermediate + spineContent + contentAfter
+    with open(newPath, 'wb') as fileName:
+        fileName.write(content.encode())
+        fileName.close()
+
+
+# 生成 HTml
+def newHtml(contentList, index):
+    contentBfter = """
+    <?xml version='1.0' encoding='utf-8'?>
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
+    <head>
+    """ + contentList[0] + """
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="../css/yuguang.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+    """
+    del (contentList[0])
+    contentAfter = """
+        </body>
+        </html>
+    """
+    newPath = path + epubName + fixedNmae[2] + "test_" + dataList.getNumbering(
+        index) + '.html'
+    content = contentBfter + '\r\n'.join(contentList) + contentAfter
+    with open(newPath, 'wb') as fileName:
+        fileName.write(content.encode())
+        fileName.close()
+
+
+# 图片下载
+def newImg(content, imgName):
+    newPath = path + epubName + fixedNmae[4] + imgName
+    with open(newPath, 'wb') as fileName:
+        fileName.write(content)
         fileName.close()
