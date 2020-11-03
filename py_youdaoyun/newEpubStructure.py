@@ -116,13 +116,14 @@ def newNcx(list):
     content = ""
     for i in list:
         strNumber = dataList.getNumbering(i['number'])
+        name = i["title"].split('丨')[1].replace('.note', '')
         content += """<navPoint class="chapter" id="html_%s" playOrder="1">
             <navLabel>
             <text>%s</text>
             </navLabel>
             <content src="content/test_%s.html"/>
         </navPoint>
-        """ % (strNumber, i['title'], strNumber)
+        """ % (strNumber, name, strNumber)
     content = contentBfter + content + contentAfter
     with open(newPath, 'wb') as fileName:
         fileName.write(content.encode())
