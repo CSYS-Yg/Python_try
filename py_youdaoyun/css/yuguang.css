@@ -1,0 +1,65 @@
+/* Global setting */
+
+/* 全局设定 */
+
+body {
+	font-size: 1em;
+	line-height: 1.2;
+}
+
+/* 主标题 */
+
+.main-title {
+	font-size: 1.5em;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* 副标题 */
+
+.sub-title {
+	font-size: 1.3em;
+	font-weight: 500;
+	text-align: center;
+}
+
+/* 内容 */
+
+.main-content {
+	font-size: 1em;
+	text-indent: 2em;
+	margin: 0.1em 0.2em;
+}
+
+/* 正文加粗 */
+
+.fw-b {
+	font-weight: bold;
+}
+
+/* 灰色 */
+
+.gray-content {
+	color: #a0a0a0;
+}
+
+/* 灰色 */
+
+.gray-content {
+	color: #a0a0a0;
+}
+
+/* 红色 */
+
+.red-content {
+	color: #ff6622;
+}
+
+/* 作者 */
+
+.author {
+	font-size: 1.2em;
+	text-align: right;
+	font-weight: 500;
+	margin: 0.1em 0.2em;
+}

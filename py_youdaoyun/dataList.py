@@ -9,6 +9,8 @@ import newEpubStructure
 
 id = '62218d1d8f42aea18e84d345e0e6923d'
 
+isImgEncrypt = False
+
 
 # 数据处理
 def refining(url):
@@ -39,7 +41,7 @@ def refining(url):
         # 美化拿到的数据
         htmlContent = BeautifulSoup(content['content'], 'html.parser')
         # 图片下载，并进行相关图片或 base64 数据进行文本替换处理
-        name = i["title"].split('丨')[1].replace('', '.note')
+        name = i["title"].split('丨')[1].replace('.note', '')
         contentImage(htmlContent, name, i["number"])
 
 
@@ -60,7 +62,10 @@ def contentImage(htmlContent, name, index):
             content = imageList[i].replace('data:image/gif;base64,', '')
             content = base64.b64decode(content)
             typeName = imghdr.what(None, content)
-        imgname = name + '_' + str(i) + '.' + typeName
+        if (isImgEncrypt):
+            imgname = str(index) + '_' + str(i) + '.' + typeName
+        else:
+            imgname = name + '_' + str(i) + '.' + typeName
         newEpubStructure.newImg(content, imgname)
         # 替换成指定文本内容
         imgname = '<para><coid></coid><text>isImg~' + imgname + '</text></para>'  # noqa

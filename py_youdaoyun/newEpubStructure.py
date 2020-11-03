@@ -3,7 +3,8 @@
 import os
 
 import dataList
-import json
+
+import shutil
 
 path = "F:\EpubText\/"  # 指定存取目录
 
@@ -30,13 +31,19 @@ application/epub+zip
 
 
 # 新建结构文件夹
-def newFolder():
+def newFolder(pathAdress, name):
+    if pathAdress:
+        path = pathAdress
+    if pathAdress:
+        epubName = name
     for i in fixedNmae:
         newPath = path + epubName + i
         if not os.path.exists(os.path.split(newPath)[0]):
             # 目录不存在创建，makedirs可以创建多级目录
             os.makedirs(os.path.split(newPath)[0])
     newMimetype()
+    newBat()
+    newCss()
 
 
 def newMimetype():
@@ -52,6 +59,35 @@ def newMimetype():
     with open(newPath, 'wb') as fileName:
         fileName.write(mimetype.encode())
         fileName.close()
+
+
+# 新建 .bat 文件操作
+def newBat():
+    bat = """
+    REM Bandizip.exe c -root:top test.zip  -r META-INF OEBPS mimetype
+
+    SET setPath={}
+
+    del /f /s /q %setPath%.epub
+
+    del /f /s /q %setPath%.zip
+
+    Bandizip.exe bc %setPath%
+
+    ren *.zip *.epub
+
+    """.format(epubName)
+    newPath = path + "/text.bat"
+    with open(newPath, 'wb') as fileName:
+        fileName.write(bat.encode())
+        fileName.close()
+
+
+# 复制 css 文件至指定目录
+def newCss():
+    old_file_path = r'./css/yuguang.css'
+    new_file_path = path + epubName + fixedNmae[3] + "yuguang.css"
+    shutil.copyfile(old_file_path, new_file_path)
 
 
 # 生成目录
@@ -121,14 +157,13 @@ def newOpf(list):
     """
     intermediate = """
         <item href="css/yuguang.css" id="id_Css" media-type="text/css"/>
-        <item href="css/test.css" id="id_Css2" media-type="text/css"/>
         <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
     </manifest>
     <spine toc = "ncx">
     """
     contentAfter = """
-            </spine>
-    <guide></guide>
+    </spine>
+        <guide></guide>
     </package>
     """
     manifestContent = ""
@@ -140,7 +175,7 @@ def newOpf(list):
         spineContent += """ <itemref idref="html_%s"/>
         """ % (strNumber)
     newPath = path + epubName + fixedNmae[1] + "content.opf"
-    content = contentBfter + manifestContent + intermediate + spineContent + contentAfter
+    content = contentBfter + manifestContent + intermediate + spineContent + contentAfter  # noqa
     with open(newPath, 'wb') as fileName:
         fileName.write(content.encode())
         fileName.close()
