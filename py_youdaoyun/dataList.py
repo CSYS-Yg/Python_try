@@ -80,6 +80,7 @@ def contentRefining(htmlContent, name, index):
     paraData = htmlContent.find_all('para')
     contentsList = []
     contentsList.append("<title>" + name + "</title>")
+    contentsList.append('<h1 class="main-title">" + name + "</h1>')
     for i in paraData:
         lineContents = i.contents[1].string
         if lineContents:
