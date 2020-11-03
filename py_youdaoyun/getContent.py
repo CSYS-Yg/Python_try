@@ -45,3 +45,11 @@ def getText(url):
                            cookies=cookies)
     content.encoding = "utf-8"
     return content
+
+
+# 请求接口，获取列表数据
+def getData(url):
+    data = requests.get(url)
+    dataJson = data.json()
+    return dataJson
+    # refining(dataJson[2])
