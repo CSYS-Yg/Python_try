@@ -9,7 +9,7 @@ import newEpubStructure
 
 id = '62218d1d8f42aea18e84d345e0e6923d'
 
-isImgEncrypt = False
+isImgEncrypt = True
 
 
 # 数据处理
@@ -80,7 +80,7 @@ def contentRefining(htmlContent, name, index):
     paraData = htmlContent.find_all('para')
     contentsList = []
     contentsList.append("<title>" + name + "</title>")
-    contentsList.append('<h1 class="main-title">" + name + "</h1>')
+    contentsList.append('<h1 class="main-title">' + name + '</h1>')
     for i in paraData:
         lineContents = i.contents[1].string
         if lineContents:
