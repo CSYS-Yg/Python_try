@@ -67,25 +67,18 @@ def contentRefining(htmlContent, name, index):
             boldList = i.contents[2].find_all('bold')
             if len(boldList):
                 bold = True
-            if bold and color == '':
+            if (bold and color == '') or (bold and color == '#0e0d0d'):
                 contentsList.append('<p class="first-level-title">' +
                                     lineContents + '</p>')
-            if bold and color == '#0e0d0d':
-                contentsList.append('<p class="first-level-title">' +
+            elif bold and (color == "#ffc000" or color == "#ffca00"):
+                contentsList.append('<p class="tag-content-yellow">' +
                                     lineContents + '</p>')
             elif bold and color == "#414040":
-                contentsList.append('<p class="second-level-title">' +
-                                    lineContents + '</p>')
-            elif bold and color == "#ffc000":
-                contentsList.append('<p class="tag-content-yellow">' +
-                                    lineContents + '</p>')
-            elif bold and color == "#ffca00":
-                contentsList.append('<p class="tag-content-yellow">' +
+                contentsList.append('<p class="main-content-bold">' +
                                     lineContents + '</p>')
             else:
                 contentsList.append('<p class="main-content">' + lineContents +
                                     '</p>')
-
     # 对处理好的内容，生成 html
     newEpubStructure.newHtml(contentsList, index)
 

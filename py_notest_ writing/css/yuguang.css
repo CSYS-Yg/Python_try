@@ -37,6 +37,15 @@ body {
 	margin: 0.1em 0.2em;
 }
 
+/* 内容加粗 */
+
+.main-content-bold {
+	font-size: 1em;
+	text-indent: 2em;
+	margin: 0.1em 0.2em;
+	font-weight: 500;
+}
+
 /* 内容标记黄色 */
 
 .tag-content-yellow {
