@@ -8,7 +8,7 @@ import shutil
 
 path = "F:\EpubText\/"  # 指定存取目录
 
-epubName = "zhichangyuxiezuo"  # 设置书名，最好为英文
+epubName = "zhichangxiezuoyugoutong"  # 设置书名，最好为英文
 
 fixedNmae = [
     "/META-INF/", "/OEBPS/", "/OEBPS/content/", "/OEBPS/css/", "/OEBPS/img/"
@@ -116,14 +116,13 @@ def newNcx(list):
     content = ""
     for i in list:
         strNumber = dataList.getNumbering(i['number'])
-        name = i["title"].split('丨')[1].replace('.note', '')
         content += """<navPoint class="chapter" id="html_%s" playOrder="1">
             <navLabel>
             <text>%s</text>
             </navLabel>
             <content src="content/test_%s.html"/>
         </navPoint>
-        """ % (strNumber, name, strNumber)
+        """ % (strNumber, i["title"], strNumber)
     content = contentBfter + content + contentAfter
     with open(newPath, 'wb') as fileName:
         fileName.write(content.encode())

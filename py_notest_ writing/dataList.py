@@ -22,31 +22,26 @@ def refining(url):
     for i in data:
         purl = i['p'].split('/', 2)[2]
         purl = 'https://note.youdao.com/yws/public/note/' + id + '/' + purl
-        print(i['tl'])
         number = re.findall('第 (.*?) 讲', i['tl'])[0]
-        print(number)
         refiningData.append({
-            "title": i['tl'],
+            "title": i['tl'].replace('.note', ''),
             "number": int(number),
             "url": purl,
         })
     # 列表排序
     refiningData.sort(key=lambda x: x["number"])
     # # 根据列表生成 ncx 文件
-    # newEpubStructure.newNcx(refiningData)
+    newEpubStructure.newNcx(refiningData)
     # # 根据列表生成 opf 文件
-    # newEpubStructure.newOpf(refiningData)
+    newEpubStructure.newOpf(refiningData)
     # 批量请求接口获取数据
     for i in refiningData:
-        if (i['number'] == 1):
-            content = getContent.getText(i['url'])
-            content = content.json()
-            print(content)
-            # 美化拿到的数据
-            htmlContent = BeautifulSoup(content['content'], 'html.parser')
-            # 图片下载，并进行相关图片或 base64 数据进行文本替换处理
-            print(htmlContent)
-        # contentRefining(htmlContent, name)
+        # if (i["number"] == 1):
+        content = getContent.getText(i['url'])
+        content = content.json()
+        # 美化拿到的数据
+        htmlContent = BeautifulSoup(content['content'], 'html.parser')
+        contentRefining(htmlContent, i["title"], i["number"])
 
 
 # 数据分类，添加不同样式
@@ -58,30 +53,39 @@ def contentRefining(htmlContent, name, index):
     for i in paraData:
         lineContents = i.contents[1].string
         if lineContents:
-            bgcolor = ""
-            if (len(i.contents[2].find_all('back-color')) > 0):
-                bgcolor = i.contents[2].find_all('back-color')[0].find_all(
-                    'value')[0].string
+            # bgcolor = ""
+            # if (len(i.contents[2].find_all('back-color')) > 0):
+            #     bgcolor = i.contents[2].find_all('back-color')[0].find_all(
+            #         'value')[0].string
             # fontSize = i.contents[2].find_all('font-size')[0].find_all(
             #     'value')[0].string
-            color = i.contents[2].find_all('color')[0].find_all(
-                'value')[0].string
+            color = ''
+            if (len(i.contents[2].find_all('color')) > 0):
+                color = i.contents[2].find_all('color')[0].find_all(
+                    'value')[0].string
             bold = False
             boldList = i.contents[2].find_all('bold')
             if len(boldList):
                 bold = True
-            if bold and color == "#ff6622":
-                contentsList.append('<p class="sub-title red-content">' +
+            if bold and color == '':
+                contentsList.append('<p class="first-level-title">' +
                                     lineContents + '</p>')
-            elif bold and color == "#545454":
-                contentsList.append('<p class="main-content fw-b">' +
+            if bold and color == '#0e0d0d':
+                contentsList.append('<p class="first-level-title">' +
                                     lineContents + '</p>')
-            elif bgcolor == "#f7dad5":
-                contentsList.append('<p class="main-content gray-content">' +
+            elif bold and color == "#414040":
+                contentsList.append('<p class="second-level-title">' +
+                                    lineContents + '</p>')
+            elif bold and color == "#ffc000":
+                contentsList.append('<p class="tag-content-yellow">' +
+                                    lineContents + '</p>')
+            elif bold and color == "#ffca00":
+                contentsList.append('<p class="tag-content-yellow">' +
                                     lineContents + '</p>')
             else:
                 contentsList.append('<p class="main-content">' + lineContents +
                                     '</p>')
+
     # 对处理好的内容，生成 html
     newEpubStructure.newHtml(contentsList, index)
 

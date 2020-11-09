@@ -7,10 +7,10 @@ getId = "B0BD9A961ACF4DC085333BB455FB6E99"
 
 path = "F:\EpubText\/"  # 指定存取目录
 
-epubName = "kexuezhandouzhinan"  # 设置书名，最好为英文
+epubName = "zhichangxiezuoyugoutong"  # 设置书名，最好为英文
 
 # # 生成指定目录
-# newEpubStructure.newFolder(path, epubName)
-# newEpubStructure.newCss()
+newEpubStructure.newFolder(path, epubName)
+newEpubStructure.newCss()
 # # 执行数据抓取
 dataList.refining(getUrl)
