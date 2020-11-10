@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.py_photography/parameter.py
+py_photography/parameter.py
 
