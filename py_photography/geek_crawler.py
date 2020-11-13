@@ -17,11 +17,14 @@ import logging
 import os
 import pathlib
 
-
 # 定义日志相关内容
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.INFO)
-handler = logging.FileHandler(filename='geek_crawler.log', mode='w', encoding='utf-8')
+logging.basicConfig(
+    format=
+    '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+    level=logging.INFO)
+handler = logging.FileHandler(filename='geek_crawler.log',
+                              mode='w',
+                              encoding='utf-8')
 log = logging.getLogger(__name__)
 log.addHandler(handler)
 
@@ -159,23 +162,34 @@ class GeekCrawler:
         self.cellphone = cellphone
         self.password = passwd
         self._check()
-        self.cookie = Cookie("LF_ID=1587783958277-6056470-8195597;_ga=GA1.2.880710184.1587783959;"
-                             "_gid=GA1.2.1020649675.1587783959; SERVERID=1fa1f330efedec1559b3abbc"
-                             "b6e30f50|1587784166|1587783958; _gat=1;Hm_lvt_022f847c4e3acd44d4a24"
-                             "81d9187f1e6=1587775851,1587775917,1587783916,1587784202; Hm_lpvt_02"
-                             "2f847c4e3acd44d4a2481d9187f1e6=1587784202;")
+        self.cookie = Cookie(
+            "LF_ID=1587783958277-6056470-8195597;_ga=GA1.2.880710184.1587783959;"
+            "_gid=GA1.2.1020649675.1587783959; SERVERID=1fa1f330efedec1559b3abbc"
+            "b6e30f50|1587784166|1587783958; _gat=1;Hm_lvt_022f847c4e3acd44d4a24"
+            "81d9187f1e6=1587775851,1587775917,1587783916,1587784202; Hm_lpvt_02"
+            "2f847c4e3acd44d4a2481d9187f1e6=1587784202;")
         self.common_headers = {
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Pragma": "no-cache",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko)Chrome/81.0.4044.122 Safari/537.36"
+            "Accept":
+            "application/json, text/plain, */*",
+            "Accept-Encoding":
+            "gzip, deflate, br",
+            "Accept-Language":
+            "zh-CN,zh;q=0.9,en;q=0.8",
+            "Cache-Control":
+            "no-cache",
+            "Connection":
+            "keep-alive",
+            "Pragma":
+            "no-cache",
+            "Sec-Fetch-Dest":
+            "empty",
+            "Sec-Fetch-Mode":
+            "cors",
+            "Sec-Fetch-Site":
+            "same-origin",
+            "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) "
+            "AppleWebKit/537.36 (KHTML, like Gecko)Chrome/81.0.4044.122 Safari/537.36"
         }
         self.products = []
         self.exclude = exclude
@@ -209,13 +223,14 @@ class GeekCrawler:
         log.info(f"接口请求参数：{params}")
         res = requests.request(method, url, headers=headers, json=params)
 
-        if (res.status_code != 200) or (str(res.json().get('code', '')) == '-1'):
+        if (res.status_code != 200) or (str(res.json().get('code', ''))
+                                        == '-1'):
             _save_finish_article_id_to_file()
             log.info(f"此时 products 的数据为：{self.products}")
             log.error(f"登录接口请求出错，返回内容为：{res.content.decode()}")
             raise RequestError(f"登录接口请求出错，返回内容为：{res.content.decode()}")
         self.cookie.load_set_cookie(res.headers['Set-Cookie'])
-        log.info('-'*40)
+        log.info('-' * 40)
 
     def _user_auth(self):
         """ 用户认证接口方法 """
@@ -230,14 +245,14 @@ class GeekCrawler:
 
         res = requests.request(method, url, headers=headers)
 
-        if (res.status_code != 200) or (str(res.json().get('code', '')) != '0'):
+        if (res.status_code != 200) or (str(res.json().get('code', '')) !=
+                                        '0'):
             _save_finish_article_id_to_file()
             log.info(f"此时 products 的数据为：{self.products}")
             log.error(f"用户认证接口请求出错，返回内容为：{res.json()}")
             raise RequestError(f"用户认证接口请求出错，返回内容为：{res.json()}")
         self.cookie.load_set_cookie(res.headers['Set-Cookie'])
         log.info('-' * 40)
-
 
     def _product(self, _type='c1'):
         """ 商品列表（就是课程）的接口）方法 """
@@ -276,7 +291,8 @@ class GeekCrawler:
             _save_finish_article_id_to_file()
             log.info(f"此时 products 的数据为：{self.products}")
             log.error(f"课程列表接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
-            raise NotValueError(f"课程列表接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
+            raise NotValueError(
+                f"课程列表接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
         log.info('-' * 40)
 
     def _parser_products(self, data, _type='c1'):
@@ -297,7 +313,10 @@ class GeekCrawler:
             if product.get('title', '') in self.exclude:
                 continue
 
-            new_product = {key: value for key, value in product.items() if key in keys}
+            new_product = {
+                key: value
+                for key, value in product.items() if key in keys
+            }
             new_product['articles'] = []  # 定义文章列表（用来存储文章信息）
             new_product['article_ids'] = []  # 定义文章 ID 列表（用来存储文章 ID 信息） ）
             for pro in lists:
@@ -336,16 +355,19 @@ class GeekCrawler:
 
         if data:
             comments = self._comments(aid) if get_comments else None
-            keys = ['article_content', 'article_title', 'id', 'audio_download_url']  # 定义要拿取的字段
-            article = {key: value for key, value in data.items() if key in keys}
-            self.save_to_file(
-                pro['title'],
-                article['article_title'],
-                article['article_content'],
-                audio=article['audio_download_url'],
-                file_type=file_type,
-                comments=comments
-            )
+            keys = [
+                'article_content', 'article_title', 'id', 'audio_download_url'
+            ]  # 定义要拿取的字段
+            article = {
+                key: value
+                for key, value in data.items() if key in keys
+            }
+            self.save_to_file(pro['title'],
+                              article['article_title'],
+                              article['article_content'],
+                              audio=article['audio_download_url'],
+                              file_type=file_type,
+                              comments=comments)
 
             FINISH_ARTICLES.append(article['id'])  # 将该文章 ID 加入到遍历完成的列表中
             pro['cid'] = data['cid']
@@ -354,7 +376,8 @@ class GeekCrawler:
             _save_finish_article_id_to_file()
             log.info(f"此时 products 的数据为：{self.products}")
             log.error(f"获取文章信息接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
-            raise NotValueError(f"获取文章信息接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
+            raise NotValueError(
+                f"获取文章信息接口没有获取到内容，请检查请求。返回结果为：{res.content.decode()}")
         log.info('-' * 40)
 
     def _comments(self, aid):
@@ -366,10 +389,7 @@ class GeekCrawler:
         headers["Host"] = "time.geekbang.org"
         headers["Origin"] = "https://time.geekbang.org"
         headers["Cookie"] = self.cookie.cookie_string
-        params = {
-            "aid": aid,
-            "prev": "0"
-        }
+        params = {"aid": aid, "prev": "0"}
 
         log.info(f"接口请求参数：{params}")
         res = requests.request(method, url, headers=headers, json=params)
@@ -381,8 +401,14 @@ class GeekCrawler:
         self.cookie.load_set_cookie(res.headers['Set-Cookie'])
 
         if data:
-            keys = ['comment_content', 'comment_ctime', 'user_header', 'user_name', 'replies']  # 定义要拿取的字段
-            comments = [{key: value for key, value in comment.items() if key in keys} for comment in data]
+            keys = [
+                'comment_content', 'comment_ctime', 'user_header', 'user_name',
+                'replies'
+            ]  # 定义要拿取的字段
+            comments = [{
+                key: value
+                for key, value in comment.items() if key in keys
+            } for comment in data]
             return comments
         else:
             return None
@@ -431,7 +457,12 @@ class GeekCrawler:
         log.info('-' * 40)
 
     @staticmethod
-    def save_to_file(dir_name, filename, content, audio=None, file_type=None, comments=None):
+    def save_to_file(dir_name,
+                     filename,
+                     content,
+                     audio=None,
+                     file_type=None,
+                     comments=None):
         """
         将结果保存成文件的方法，保存在当前目录下
         Args:
@@ -461,21 +492,21 @@ class GeekCrawler:
                 for replie in comment.get('replies', []):
                     replie_str += f"""<p class="_3KxQPN3V_0">{replie['user_name']}: {replie['content']}</p>"""
                 comment_str = f"""<li>
-<div class="_2sjJGcOH_0"><img src="{comment['user_header']}"
-  class="_3FLYR4bF_0">
-<div class="_36ChpWj4_0">
-  <div class="_2zFoi7sd_0"><span>{comment['user_name']}</span>
-  </div>
-  <div class="_2_QraFYR_0">{comment['comment_content']}</div>
-  <div class="_10o3OAxT_0">
-    {replie_str}
-  </div>
-  <div class="_3klNVc4Z_0">
-    <div class="_3Hkula0k_0">{datetime.datetime.fromtimestamp(comment['comment_ctime'])}</div>
-  </div>
-</div>
-</div>
-</li>\n"""
+                                    <div class="_2sjJGcOH_0"><img src="{comment['user_header']}"
+                                    class="_3FLYR4bF_0">
+                                    <div class="_36ChpWj4_0">
+                                    <div class="_2zFoi7sd_0"><span>{comment['user_name']}</span>
+                                    </div>
+                                    <div class="_2_QraFYR_0">{comment['comment_content']}</div>
+                                    <div class="_10o3OAxT_0">
+                                        {replie_str}
+                                    </div>
+                                    <div class="_3klNVc4Z_0">
+                                        <div class="_3Hkula0k_0">{datetime.datetime.fromtimestamp(comment['comment_ctime'])}</div>
+                                    </div>
+                                    </div>
+                                    </div>
+                                    </li>\n"""
                 temp += comment_str
             temp += "</ul>"
 
@@ -487,7 +518,11 @@ class GeekCrawler:
             f.write(content + temp)
 
 
-def run(cellphone=None, passwd=None, exclude=None, file_type=None, get_comments=False):
+def run(cellphone=None,
+        passwd=None,
+        exclude=None,
+        file_type=None,
+        get_comments=False):
     """ 整体流程的请求方法 """
     global FINISH_ARTICLES
     global ALL_ARTICLES
@@ -510,7 +545,10 @@ def run(cellphone=None, passwd=None, exclude=None, file_type=None, get_comments=
 
             if str(aid) in FINISH_ARTICLES:
                 continue
-            geek._article(aid, pro, file_type=file_type, get_comments=get_comments)  # 获取单个文章的信息
+            geek._article(aid,
+                          pro,
+                          file_type=file_type,
+                          get_comments=get_comments)  # 获取单个文章的信息
             time.sleep(5)  # 做一个延时请求，避免过快请求接口被限制访问
             number += 1
             # 判断是否连续抓取过 37次，如果是则暂停 10s
